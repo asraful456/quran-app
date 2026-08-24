@@ -5,31 +5,38 @@ export default function App() {
   const [surahs, setSurahs] = useState([]);
   const [surahData, setSurahData] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(1);
-
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function getSurahs() {
-      const response = await axios.get(
-        "https://api.alquran.cloud/v1/surah"
-      );
-
-      setSurahs(response.data.data);
+      try {
+        const response = await axios.get(
+          "https://api.alquran.cloud/v1/surah"
+        );
+        setSurahs(response.data.data);
+      } catch (error) {
+        console.error("Error fetching surahs list:", error);
+      }
     }
 
     getSurahs();
   }, []);
 
-
   async function getSurah(number) {
-    const response = await axios.get(
-      "https://api.alquran.cloud/v1/surah/" + number
-    );
-
-    setSurahData(response.data.data);
-    setSelectedNumber(number);
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        "https://api.alquran.cloud/v1/surah/" + number
+      );
+      setSurahData(response.data.data);
+      setSelectedNumber(number);
+    } catch (error) {
+      console.error("Error fetching surah data:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
- 
   useEffect(() => {
     getSurah(1);
   }, []);
@@ -86,7 +93,7 @@ export default function App() {
             </div>
 
             {/* Surah Information */}
-            {surahData && (
+            {surahData && !loading && (
               <div className="w-full md:w-1/2 text-center md:text-right">
 
                 <h1 className="text-2xl font-bold">
@@ -112,101 +119,107 @@ export default function App() {
 
         </div>
 
-        {/* Quran Content */}
-        <div className="bg-white rounded-2xl shadow-xl border border-emerald-100 overflow-hidden">
-
-          {/* Bismillah */}
-          <div className="text-center py-6 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 border-b border-amber-100">
-
-            <p
-              dir="rtl"
-              className="text-3xl text-emerald-800 font-semibold"
-            >
-              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-            </p>
-
-            <p className="text-xs text-amber-700 mt-2 tracking-wider">
-              IN THE NAME OF ALLAH, THE MOST GRACIOUS, THE MOST MERCIFUL
-            </p>
-
+        {/* Quran Content / Loading State */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl shadow-xl border border-emerald-100">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
+            <p className="text-emerald-700 font-medium mt-4">Loading Surah...</p>
           </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-xl border border-emerald-100 overflow-hidden">
 
-          {/* Ayahs */}
-          <div className="px-4 md:px-8">
+            {/* Bismillah */}
+            <div className="text-center py-6 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 border-b border-amber-100">
 
-            {surahData &&
-              surahData.ayahs.map((ayah) => (
-                <div
-                  key={ayah.numberInSurah}
-                  className="
-                    group
-                    flex
-                    items-start
-                    gap-4
-                    py-6
-                    border-b
-                    border-emerald-50
-                    hover:bg-emerald-50/60
-                    transition-all
-                    duration-300
-                    rounded-xl
-                    px-3
-                  "
-                >
+              <p
+                dir="rtl"
+                className="text-3xl text-emerald-800 font-semibold"
+              >
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+              </p>
 
-                  {/* Ayah Number */}
+              <p className="text-xs text-amber-700 mt-2 tracking-wider">
+                IN THE NAME OF ALLAH, THE MOST GRACIOUS, THE MOST MERCIFUL
+              </p>
+
+            </div>
+
+            {/* Ayahs */}
+            <div className="px-4 md:px-8">
+
+              {surahData &&
+                surahData.ayahs.map((ayah) => (
                   <div
+                    key={ayah.numberInSurah}
                     className="
+                      group
                       flex
-                      items-center
-                      justify-center
-                      w-9
-                      h-9
-                      rounded-full
-                      bg-gradient-to-br
-                      from-emerald-500
-                      to-teal-600
-                      text-white
-                      text-sm
-                      font-bold
-                      shrink-0
-                      shadow-md
-                      group-hover:scale-110
-                      transition-transform
+                      items-start
+                      gap-4
+                      py-6
+                      border-b
+                      border-emerald-50
+                      hover:bg-emerald-50/60
+                      transition-all
+                      duration-300
+                      rounded-xl
+                      px-3
                     "
                   >
-                    {ayah.numberInSurah}
-                  </div>
 
-                  {/* Arabic */}
-                  <div className="w-full">
-
-                    <p
-                      dir="rtl"
+                    {/* Ayah Number */}
+                    <div
                       className="
-                        text-2xl
-                        md:text-3xl
-                        leading-[2.2]
-                        text-right
-                        text-gray-800
-                        group-hover:text-emerald-900
-                        transition-colors
+                        flex
+                        items-center
+                        justify-center
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-gradient-to-br
+                        from-emerald-500
+                        to-teal-600
+                        text-white
+                        text-sm
+                        font-bold
+                        shrink-0
+                        shadow-md
+                        group-hover:scale-110
+                        transition-transform
                       "
                     >
-                     
-                      <span>
-                        {ayah.text}
-                      </span>
-                    </p>
+                      {ayah.numberInSurah}
+                    </div>
+
+                    {/* Arabic */}
+                    <div className="w-full">
+
+                      <p
+                        dir="rtl"
+                        className="
+                          text-2xl
+                          md:text-3xl
+                          leading-[2.2]
+                          text-right
+                          text-gray-800
+                          group-hover:text-emerald-900
+                          transition-colors
+                        "
+                      >
+                        <span>
+                          {ayah.text}
+                        </span>
+                      </p>
+
+                    </div>
 
                   </div>
+                ))}
 
-                </div>
-              ))}
+            </div>
 
           </div>
-
-        </div>
+        )}
 
         {/* Footer */}
         <div className="text-center mt-5">
