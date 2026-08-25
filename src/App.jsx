@@ -6,6 +6,8 @@ export default function App() {
   const [surahData, setSurahData] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     async function getSurahs() {
@@ -41,6 +43,23 @@ export default function App() {
     getSurah(1);
   }, []);
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setIsSearching(true);
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 200);
+  };
+
+  const filteredSurahs = surahs.filter((surah) => {
+    const query = searchQuery.toLowerCase().trim();
+    return (
+      surah.number.toString().includes(query) ||
+      surah.name.toLowerCase().includes(query) ||
+      surah.englishName.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-6 px-4">
 
@@ -52,48 +71,93 @@ export default function App() {
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-5">
 
-            {/* Dropdown */}
-            <div className="w-full md:w-1/2">
+            {/* Dropdown & Search Container */}
+            <div className="w-full md:w-1/2 flex flex-col gap-3">
+              
+              {/* Search Box */}
+              <div>
+                <label className="block text-sm font-semibold mb-1 text-emerald-50">
+                  🔍 Search Surah
+                </label>
+                <div className="relative flex items-center">
+                  <input
+                    type="text"
+                    placeholder="Type name or number..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="
+                      w-full
+                      h-10
+                      pl-4
+                      pr-10
+                      rounded-xl
+                      bg-white
+                      text-gray-800
+                      placeholder-gray-400
+                      border-2
+                      border-white
+                      shadow-sm
+                      text-sm
+                      font-medium
+                      focus:outline-none
+                      focus:ring-2
+                      focus:ring-emerald-300
+                    "
+                  />
+                  {isSearching && (
+                    <div className="absolute right-3 flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-500 border-t-transparent"></div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              <label className="block text-sm font-semibold mb-2 text-emerald-50">
-                📖 Select Surah
-              </label>
+              {/* Dropdown */}
+              <div>
+                <label className="block text-sm font-semibold mb-1 text-emerald-50">
+                  📖 Select Surah
+                </label>
 
-              <select
-                value={selectedNumber}
-                onChange={(e) => getSurah(e.target.value)}
-                className="
-                  w-full
-                  h-12
-                  px-4
-                  rounded-xl
-                  bg-white
-                  text-gray-800
-                  border-2
-                  border-white
-                  shadow-md
-                  text-base
-                  font-medium
-                  focus:outline-none
-                  focus:ring-4
-                  focus:ring-emerald-300
-                  cursor-pointer
-                "
-              >
-                {surahs.map((surah) => (
-                  <option
-                    key={surah.number}
-                    value={surah.number}
-                  >
-                    {surah.number}. {surah.name} - {surah.englishName}
-                  </option>
-                ))}
-              </select>
+                <select
+                  value={selectedNumber}
+                  onChange={(e) => getSurah(e.target.value)}
+                  className="
+                    w-full
+                    h-12
+                    px-4
+                    rounded-xl
+                    bg-white
+                    text-gray-800
+                    border-2
+                    border-white
+                    shadow-md
+                    text-base
+                    font-medium
+                    focus:outline-none
+                    focus:ring-4
+                    focus:ring-emerald-300
+                    cursor-pointer
+                  "
+                >
+                  {filteredSurahs.length > 0 ? (
+                    filteredSurahs.map((surah) => (
+                      <option
+                        key={surah.number}
+                        value={surah.number}
+                      >
+                        {surah.number}. {surah.name} - {surah.englishName}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled value="">No Surah found</option>
+                  )}
+                </select>
+              </div>
 
             </div>
 
             {/* Surah Information */}
-            {surahData && !loading && (
+            {filteredSurahs.length > 0 && surahData && !loading && (
               <div className="w-full md:w-1/2 text-center md:text-right">
 
                 <h1 className="text-2xl font-bold">
@@ -119,11 +183,17 @@ export default function App() {
 
         </div>
 
-        {/* Quran Content / Loading State */}
+        {/* Quran Content / Loading State / Not Found State */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl shadow-xl border border-emerald-100">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
             <p className="text-emerald-700 font-medium mt-4">Loading Surah...</p>
+          </div>
+        ) : filteredSurahs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-xl border border-emerald-100 text-center px-4">
+            <p className="text-4xl mb-3">🔍</p>
+            <h3 className="text-xl font-bold text-gray-700 mb-1">No Surah Found</h3>
+            <p className="text-sm text-gray-500">Please try searching with a valid Surah name or number.</p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-xl border border-emerald-100 overflow-hidden">
