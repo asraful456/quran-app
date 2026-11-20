@@ -1,16 +1,26 @@
-# React + Vite
+Quran App
+A responsive web app for reading the Quran online. Pick any surah from the list, search by name or number, and read its verses (ayahs) in a clean, mobile-friendly layout.
+Live demo:
+Features
+Browse all 114 surahs, loaded from the Al Quran Cloud API
+Live search by surah number, Arabic name or English name
+Surah selector with details: name, English translation of the name, number of ayahs
+Loading spinner and "not found" states
+Responsive design with Tailwind CSS
+Tech Stack
+React 19
+Vite
+Tailwind CSS
+Axios
+Al Quran Cloud API
+Deployed on Vercel
+Getting Started
+git clone https://github.com/asraful456/quran-app.git
+cd quran-app
+npm install
+npm run dev
+Then open the local URL shown in the terminal (usually http://localhost:5173).
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+To create a production build:
+npm run build
+npm run preview
