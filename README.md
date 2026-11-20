@@ -1,6 +1,6 @@
 Quran App
 A responsive web app for reading the Quran online. Pick any surah from the list, search by name or number, and read its verses (ayahs) in a clean, mobile-friendly layout.
-Live demo:
+Live demo:https://quran-app-lake-nine.vercel.app/
 Features
 Browse all 114 surahs, loaded from the Al Quran Cloud API
 Live search by surah number, Arabic name or English name
